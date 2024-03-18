@@ -1,0 +1,370 @@
+---
+title: "DATA 602 L02 Team 4 Report"
+author: "Jose Gabriel Abes, Jocelyn Oja, Daniel Alpizar, Khalil Nayef"
+date: "2023-10-17"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(dplyr)
+library(knitr)
+library(tinytex)
+library(ggplot2)
+library(mosaic)
+library(ggplot2)
+```
+
+*Abstract*  
+The purpose of our report is to apply some statistical method to help determine different attributes of undergraduate students that may have impacted the experience of moderate to severe levels of anxiety during the COVID-19 pandemic. Specifically we wanted to:
+\begin{itemize}
+  \item explore the difference in proportions of those who experience moderate to severe anxiety to those who did not between male and female students  
+  \item test if there is a relationship between the academic year of the student and the experience of moderate to severe anxiety  
+\end{itemize}
+Through our analysis we found:
+\begin{itemize}
+  \item that there was statistical evidence to support that compared to their male counterparts, the proportion of female students who experience moderate to severe levels of anxiety is greater.
+  \item there is no relationship between academic year of female students and anxiety.
+  \item our findings that female university students experience of moderate to severe levels of anxiety are in line with current literature.
+  \item further research should be conducted on the relationship of experience of anxiety between the different years of study among university students.
+\end{itemize}
+
+**Introduction**
+
+The COVID-19 pandemic introduced a multi-dimensional impact on the mental health of adults and children. One may develop anxiety about contracting the disease or adjusting to new societal protective measures. Young adults are especially vulnerable to developing general anxiety disorders (Kessler et al., 2007) and may still be in the process of developing their capacities for emotional regulation and decision-making (Ahmed et al., 2015). A study by the Government of Canada (2022) found that young adults were found to be less likely to find stable employment compared to older adults during the COVID-19 pandemic.
+  
+One group of young adults who are prone to mental health issues is university students. This population of young adults is unique as they typically enter a new stage of society with adult-level responsibilities such as full or part-time employment, significant relationships outside of their family, and heightened academic load (Pedrelli et al., 2015). Thus, the delicate balance of heavier responsibilities along with developing emotional regulation may exacerbate mental health issues. Mental health issues among university students can predict lower academic, substance abuse, and increase risk of dropping out of university (Eisenberg et al., 2009; Pedrelli et al., 2015).
+  
+A study by Lipson et al. (Lipson et al., 2022) found that from the start of the pandemic, in a cohort of over 350,000 university students from around the world, there were over 60% of students who met the criteria of having one or more notable mental health problem. However, female university students seem to be disproportionately affected the pandemic. A study by Prowse et al. (2021) found that in their survey of Carleton University students, that the pandemic has a more pronounced negative effect in young female adults’ mental health, academics, and social isolation compared to their male counterparts. Thus, our project seeks to expand on existing literature by analyzing other publicly available surveys that examine the mental health of university students during the COVID-19 pandemic.
+  
+**Dataset**
+
+We will be using a publicly available survey by Patterson and Reeves (2022). This data was collected from 2020-09-22 to 2020-10-30. The students were mainly recruited through social media such as Twitter, Reddit, Facebook, and Instagram with additional advertising in the Canadian Psychological Association’s (CPA) Research Participant Portal (R2P2) and REACH BC. Eligible students were those who were enrolled in a full-undergraduate degree program at a recognized Canadian university. The survey was hosted on Qualtrics. There dataset has 147 variables with 1192 respondents $n=1192$ who successfully completed the survey.We dropped all the variables we did not examine as we will be focusing on examining the impacts of anxiety on males and females. Additionally, we will further filter the dataset to examine year of study differences between first year females and fourth year females. 
+
+**Coding the dataset and Choosing Variables**
+
+The survey asked respondents to complete the Depression, Anxiety and Stress Scale - 21 Items (DASS-21) questionnaire (Lovibond & Lovibond, 1995) and the dataset includes individual scores for each question in the questionnaire. We filtered the dataset to look for the anxiety score as the sum of the of their DASS-21 scores relevant to anxiety and multiplied the score by 2. We will combine the scores of anxiety scores “Moderate”, “Severe”, and “Extremely Severe” to a category of “Moderate to Severe” levels of anxiety which is a range of $\ge 10$ (Lovibond & Lovibond, 1995). The other category is a combination of “Normal”, and “Mild” as “Normal to Mild” levels of anxiety with the range of $<10$. We have decided to dichotomize the scores and make the assumption that “Normal to Mild” levels of anxiety does not have as great of a burden on a person’s daily activities and functions as “Moderate to Severe” levels of anxiety. We will structure our hypothesis testing based on these categories.
+
+We chose to examine the difference in anxiety levels in gender to add onto the current literature which suggests that females may experience more severe mental health issues (Prowse et al., 2021). We also seek to examine the difference between the year of study among females, with lower year students representing younger students who are entering university for the first time while fourth year students are accustomed to the unique stressors of entering university. 
+
+
+The student year data can be found in the column “Year_credits” and they are coded for “1” as first year, and “4” as fourth year. The gender data can be found in the column “Gender” which are coded for “1” as male, and “2” as female. We will assume that the reporting “male” or “female” as one’s gender identity corresponds to the socially appropriate terms “Man” and “Woman”. Additionally, we will be removing the "non-binary/genderqueer" which is coded as "3" and "other/not listed above" coded as "4". We have decided to remove these because we wanted to focus our analysis on "males" and "females" and not make any inappropriate extrapolations to other gender identities. Thus, our final sample population size is $n=1169$
+
+**Guiding Questions and Methods**
+
+Question 1: **Is there a statistically significant difference in proportion between males and females who experience moderate to severe levels of anxiety?**
+
+For this issue we will focus on the population variable "Gender" represented by the column name gender in the dataset. We chose to examine the difference in gender as noted in the literature (Prowse et al. 2021), females experienced worse mental health issues during the COVID-19 pandemic. We will analyze the population parameter proportion between females, $\hat{p}_{F}$, and males, $\hat{p}_{M}$. We will also conduct a hypothesis test to identify if there is a difference in proportion between males and females that experience a moderate or greater levels of anxiety. We  We will use the common significance of 0.05 to compare against our computed p-value. We will be using a prop.test() in RStudio to conduct our analysis of difference in proportions. We will also report a 95% confidence interval of the difference in proportions testing against the common significance of 0.05. We will present our visualizations of the distribution of the differences in proportions using ggplot2. We will also present a visualization of the distribution of genders who experience moderate to severe levels of anxiety.
+  
+**Assumptions**
+
+1)	**Independent Samples:** We will reasonably assume that observations do not influence each other. In the context of our study, we reasonably assume that the students completed the surveys on their own and did not influence the answers of other students. 
+
+2) **Large Sample Size:** Our data also meets the requirement for large sample sizes as our expected cell frequencies $E_{ij} > 5$. We have the following contingency table with cell frequencies:
+
+\[
+\begin{array}{|l|c|c|c|}
+\hline
+ & \text{Anxiety} & \text{No Anxiety} & \text{Totals} \\
+\hline
+\text{Female} & 339 (368.281) & 601 (571.719) & 940 \\
+\text{Male} & 119 (89.719) & 110 (139.281) & 229 \\
+\hline
+\text{Total} & 458 (89.719) & 711 (139.281) & 1,169 \\
+\hline
+\end{array}
+\]
+
+If our sample size did not meet the conditions for large sample sizes, we can correct for continuity using the argument "correct = false" in the prop.test() function. We can also use the Fisher's Exact Test. However, we still require that the row and column totals are fixed and the previous conditions must hold. We can examine the contingency table of expected values below to determine if this condition holds. However, we still require that the row and column totals are fixed and the previous conditions must hold. We can examine the contingency table of expected values below to determine if this condition holds. Thus, since the conditions are met We can assume that the the standard prop.test() is appropriate for our test and no correction continuity needs to be made.  
+
+3) **Random Sampling:**  We will assume that each Canadian university student had a reasonably equal opportunity and ability to access and complete the survey as the survey was available through multiple avenues and advertised via various social media platforms. The survey was also available for at least one month, which can be a reasonable amount of time to assume that the population would have equal opportunity to complete the survey.
+
+4) **Fixed Number of Trials:** We will reasonably assume that the students would only complete the survey once. And we will also reasonably assume, that the registered answers are the first submission of the respondents.
+
+5) **Two Possible Outcomes:** We will analyze the observations as Bernoulli trials where we assume that the ranges of “Normal to Mild” capture all the “failures” and “Moderate and Greater” capture all the “successes” in the sample population of 1192.
+
+
+Question 2: **Is the Year Credit of female students independent to experiencing moderate or greater levels of anxiety?**
+For our second issue, we chose to focus on population variable "Student Year" represented by the column name "year_credits" when filtered for the “females” in the dataset. Specifically, we will be focusing on the population parameter, proportion, $\hat{p}$. We will be conducting a hypothesis test to examine if moderate to severe levels of anxiety among females is independent of being a first year student or fourth year student. The population variables are represented as $\hat{p}_{1st Year Females}$ and fourth year students, $\hat{p}_{Fourth Year Females}$. We chose first year and fourth year females to represent the extreme populations that illustrate the difference in a typically younger and older population. According to existing literature we discussed earlier, the younger population represent the students who may be most burdened by the new responsibilities associated with entering adult society. However, we will further filter among female students as based on existing literature (Prowse et. al, 2021), females are the ones who are disproportionately affected by worse mental health during the COVID-19 pandemic. We will present visualizations of the $\chi^2$ value in a distribution density plot to examine the the p-value in terms of the area to the right of the $\chi^2$ value. We will also show the distribution of first year females and fourth year females that are affected with moderate to severe levels of anxiety using ggplot2.
+
+Assumptions:
+
+1) **Independent Samples:** Again we will reasonably assume that observations do not influence each other. In the context of our study, we reasonably assume that the students completed the surveys on their own and did not influence the answers of other students.
+
+2) **Categorical Data:** Both the variables under study are categorical, first year and second year students, and if the student did or did not experience moderate to severe symptoms of anxiety.
+
+3) **Sample Size:** Ideally, the number of observations in the categories should not be too small. A common rule of thumb is that no expected frequency should be below 5 in a contingency table. If $E_{ij} < 5$, we would have to use the Fisher's Exact test, or fisher.test(). It would be suitable for our case, if our $E_{ij} < 5$ because our contingency table is only 2x2. It would be able to ease our reliance on approximating to the binomial distribution. However, we still require that the row and column totals are fixed and the previous conditions must hold. We can examine the contingency table of expected values below to determine if this condition holds.
+
+Contingency table completed for $E_{ij}$:  
+\[
+\begin{array}{|l|c|c|c|}
+\hline
+ & \text{Anxiety} & \text{No Anxiety} & \text{Totals} \\
+\hline
+\text{1st Year Females} & 94 (98.047) & 175 (170.953) & 269 \\
+\text{4th Year Females} & 62 (57.953) & 110 (101.046) & 159 \\
+\hline
+\text{Total} & 156 & 272 & n=428 \\
+\hline
+\end{array}
+\]
+We can see here that $E_{ij}$ > 5 for all values of $E_{ij}$. Thus all our assumptions hold, and we can continue with a $\chi^{2}$ Test of Independence.
+
+
+**Analysis**
+
+**Question 1 Analysis**
+
+We aim to investigate whether there is a difference in proportion for students' gender and their experience of moderate to severe anxiety during the COVID-19 pandemic. We will be testing for statistically significant differences in the proportions of students in each gender group who experience moderate to severe anxiety. Furthermore, we will compute a confidence interval to offer insights into the magnitude and precision of this difference.
+
+The data presented below was obtained from a random sample of 1,169 university students. This sample specifically includes self-reported male and female students.
+
+To represent the null hypothesis of independence between these two categorical variables, we compute the expected counts $E_{ij}$ in the contingency table using the formula $E_{ij}$ = $\frac{(Total Row_i) * (Total Column_j)}{n}$
+
+\[
+\begin{array}{|l|c|c|c|}
+\hline
+ & \text{Anxiety} & \text{No Anxiety} & \text{Totals} \\
+\hline
+\text{Female} & 601 (571.719) & 339 (368.281) & 940 \\
+\text{Male} & 110 (139.281) & 119 (89.719) & 229 \\
+\hline
+\text{Total} & 711 & 458 & 1169 \\
+\hline
+\end{array}
+\]
+
+``` {r echo = TRUE}
+mental_health_survey = na.omit(read.csv("02_Student_Mental_Health.csv"))
+
+# Selecting the variables of interest from our data
+mental_health = subset(mental_health_survey, select = c(Year_credits, Gender, 
+    DASS_1, DASS_2, DASS_3, DASS_4, DASS_5, DASS_6, DASS_7, DASS_8, DASS_9,
+    DASS_10, DASS_11,DASS_12, DASS_13, DASS_14, DASS_15, DASS_16, DASS_17, 
+    DASS_18, DASS_19, DASS_20, DASS_21))
+
+# Creating an Anxiety column to store the total anxiety score for each student. 
+# (sum of the columns that correspond with anxiety times 2)
+mental_health <- mental_health %>%
+  mutate_at(vars(starts_with("DASS_")), ~ . - 1) %>%
+  mutate(Anxiety = 2*(DASS_2+DASS_4+DASS_7+DASS_9+DASS_15+DASS_19+DASS_20)) %>%
+  select(Year_credits, Gender, Anxiety)
+
+# Creating a Result column that identifies if the student has moderate/severe anxiety
+mental_health$Result <- with(mental_health, ifelse(Anxiety >= 10, 'Yes', 'No'))
+
+# Replacing "Gender" codes for labels
+mental_health$Gender <- ifelse(mental_health$Gender == 1, "Male",
+                             ifelse(mental_health$Gender == 2, "Female",
+                             ifelse(mental_health$Gender == 3, "Non-binary",
+                             ifelse(mental_health$Gender == 12, "Other",
+                             mental_health$Gender))))
+
+# Filtering out "Non-binary" and "Other"
+mental_health_gender = mental_health[mental_health$Gender == "Female" |
+                                       mental_health$Gender == "Male", ]
+
+gender.cont.table = tally(~Gender + Result, margins=TRUE, 
+                          data=mental_health_gender)
+```
+
+We can proceed to compare the proportions of male and female students suffering from anxiety using the prop.test() function. We will compare the P-value from this test to the common significance of 0.05. Our statistical hypotheses are as follows:
+
+$H_{0}: p_{female} = p_{male}$, where the proportion of males and females who experience moderate to severe anxiety is the same\
+$H_{A}: p_{female} \neq p_{male}$, where the proportion of males and females who experience moderate to severe anxiety is not the same
+
+We chose a two tailed test as our alternative to account for the possibility that either proportion of males or females could be higher.
+
+The Type I error $\alpha$ is concluding when there is a significant difference in the proportion of males and females who experience moderate to high anxiety, when in reality, there is not. The Type II error $\beta$ is concluding when there is not a significant difference in the proportion of males and females who experience moderate to high anxiety, when in reality, there is.
+
+We are attempting to control for the type I error by comparing our P-value to a common significance of 0.05. However, we cannot make any reasonable assumptions about knowing the true difference in proportions. We would ideally need to know more about the effect of anxiety on the true population. Thus, we acknowledge the possibility of the Type II error but will not conduct further testing on it. 
+
+The following code shows how we conducted the prop.test().
+
+
+```{r echo=TRUE}
+options(scipen=999)
+prop.test(c(601, 110), c(940, 229), alternative = "two.sided", correct = FALSE)
+```
+
+With the P-value of 0.000009856, we fail to find evidence to reject the null hypothesis that the proportion of students that experience of moderate to severe anxiety are equivalent for female and male genders. The probability of observing evidence as strong or stronger against the null hypothesis than the current data is extremely low, at $9.8\times10^{-6}$.
+
+We can now proceed to calculate the confidence interval for the unknown difference between the proportions of the two groups, using the Agresti-Coull version of the confidence interval:
+
+```{r echo=TRUE}
+options(scipen=999)
+stud.conf = prop.test(c(601+1, 110+1), c(940+2, 229+2), 
+                      alternative = "two.sided", correct = FALSE)$conf
+
+cat("The 95% confidence interval spans from", stud.conf[1], "to", stud.conf[2])
+```   
+
+Based on these findings, we are 95% confident that the difference in proportion of females and males lies within the range $0.08718989 \le p_{female} - p_{male} \le 0.2299028$ This outcome indicates that $p_{female} > p_{male}$ since the entire 95% confidence interval exceeds zero. Based on these findings, one can infer that the proportion of female students that experience moderate to severe anxiety is anywhere from 8.72% to 22.99% higher than the proportion of male students that experience moderate to severe anxiety.
+
+
+In the following visualization, we will examine the raw counts of the differences in the two populations:
+```{r echo=TRUE}
+ggplot(data=mental_health_gender, aes(x=Gender, fill=Result)) +
+  geom_bar(position="dodge", na.rm=TRUE) +
+  ggtitle("Proportion of Subjects with High Anxiety by Gender") +
+  xlab("Gender") +
+  guides(fill=guide_legend(title="Anxiety Level")) +
+  scale_fill_manual(values = c("darkgrey", "red"),
+                    labels = c("Normal to Mild", "Moderate to Severe"))
+```
+We can see here that compared to their male counterparts, the proportion of females who experience moderate to severe levels of anxiety is greater.
+
+
+**Question 2 Analysis**
+
+After we have filtered for gender, we are looking to see if there is a relationship with the academic year of the female student and whether or not that student experienced moderate to severe symptoms of anxiety.
+
+To represent the null hypothesis of independence between these two categorical variables, we compute the expected counts $E_{ij}$ in the contingency table using the formula $E_{ij}$ = $\frac{(Total Row_i) * (Total Column_j)}{n}$. The contingency table is as follows:
+
+\[
+\begin{array}{|l|c|c|c|}
+\hline
+ & \text{Anxiety} & \text{No Anxiety} & \text{Totals} \\
+\hline
+\text{1st Year Females} & 175 (170.953) & 94 (98.047) & 269 \\
+\text{4th Year Females} & 97 (101.046) & 62 (57.953) & 159 \\
+\hline
+\text{Total} & 272 & 156 & n=428 \\
+\hline
+\end{array}
+\]
+
+Since we have bivariate categorical data, we will perform a $\chi^{2}$ Test of Independence to determine if there is a relationship between the year of the student and the experience of moderate to severe anxiety for female students during the COVID-19 pandemic.  
+  
+The statistical hypotheses are as follows:  
+  
+$H_{0}:$ The academic year of the female student and anxiety are not related\  
+$H_{A}:$ The academic year of the female student and anxiety are related.  
+
+The Type I error $\alpha$ is concluding when there is a relationship between the academic year of the female student and anxiety, when in reality, there is not. The Type II error $\beta$ is concluding when there is no relationship between the academic year of the female student and anxiety, when in reality, there is.
+
+We are attempting to control for the Type I error by comparing our P-value to a common significance of 0.05. However, we cannot make any reasonable assumptions about knowing the true difference in proportions. We would ideally need to know more about the effect of anxiety on the true population. Thus, we acknowledge the possibility of the Type I and Type II error but will not conduct further testing on it. 
+
+The code below shows how we further filtered for year of study.
+``` {r echo = TRUE}
+# Filtering for female 1st and 4th year students 
+female_mental_health <- mental_health[mental_health$Gender == "Female" & 
+                                      (mental_health$Year_credits == 1 | 
+                                       mental_health$Year_credits == 4),]
+female_mental_health$Year <- with(female_mental_health, 
+                                  ifelse(Year_credits == 1, 
+                                         '1st Year', '4th Year'))
+#tally(~Year_credits + Result, margins = TRUE, data=female_mental_health)
+```
+
+
+We Will be testing the p-value against the common significance of 0.05. We now compute the value of the $\chi^{2}$ test statistic:
+\[\chi_{\text{Obs}^2} = \sum_{i=1}^{r} \sum_{j=1}^{c} \frac{(O_{ij} - E_{ij})^2}{E_{ij}}\]
+\[=0.7074682991\]
+
+To conduct the chi-squared test, we will use the chisq.test().
+
+```{r echo=TRUE}
+# Performing Chi-Squared test based on tally results
+a = rbind(c(94, 175), c(62,97))
+chisq.test(a, correct = FALSE)
+```
+
+We now compute the p-value, to estimate how likely is it to get a result that is stronger against the null hypothesis that our current result of $\chi^{2}=0.70745$
+Our degrees of freedom are obtain from:
+$df=(c-1)*(r-1)=(2-1)*(2-1)=1$\
+
+Now, we consider the $P(\chi^{2}_{(2-1)(2-1)}>0.70745)=P(\chi^{2}_{1}>0.70745)$. A visualization of this is provided below.
+
+```{r echo=TRUE}
+chivalues = seq(0, 5, 0.01) 
+
+plot(chivalues, dchisq(chivalues,1), xlab="Values of Test Statistic", 
+     ylab="Density", type="l", col="blue", 
+     main="Chi-square Distribution with 1 degrees of freedom")
+abline(v=0.70745, col="red")
+
+```
+
+The p-value is the area to the right of the red line. It can be computed by:
+```{r echo=TRUE}
+options(scipen=999)
+1-pchisq(0.70745, 1)
+```
+
+Since we get  $P-value=P(\chi^{2}_{1}>0.70745)=0.4002917$, which is significantly greater than the significance of 0.05, we do not have sufficient evidence to reject the null hypothesis. This indicates that the probability of observing evidence as strong as, or stronger than what we have, assuming the null hypothesis is true, is approximately 40%. Thus, we can conclude that the academic year of the student and the experience of moderate to severe anxiety are not related for female students.  
+  
+Let's visualize this data to get a clearer picture of the proportions:  
+``` {r echo = TRUE}
+ggplot(data=female_mental_health, aes(x = Year, fill=Result)) + 
+  geom_bar(position = "dodge", na.rm=TRUE) + 
+  ggtitle("Anxiety by Academic Year") + xlab("Academic Year") +
+  guides(fill=guide_legend(title="Anxiety Level")) + 
+  scale_fill_manual(values = c("darkgrey", "red"),
+                    labels = c("Normal to Mild", "Moderate to Severe"))
+```
+
+We can see from the graph above that the proportions of those who experience moderate to severe anxiety is relatively similar across both first year and fourth year students. Giving us some conformation that there is no relationship between academic year of female students and anxiety.
+
+**Discussion of Findings and Conclusion**
+
+Our goal in this project was to examine the prevalence and association of poor mental health, particularly anxiety, among Canadian undergraduate university students during the COVID-19 pandemic. We thought that this inquiry was interesting and relevant because university students represent the age range of entering young adulthood. Young adult university students represent a unique demographic that are exposed to new responsibilities and independence which can be precursors to poor mental health outcomes. This simultaneous increase in autonomy and responsibilities can be difficult to handle, especially for first-year students dealing with it for the first time.
+
+We used a survey dataset from (Patterson & Reeves, 2022) which examines $n=1192$ students across Canada who were registered in an undergraduate program at a registered university in Canada. We filtered this dataset to examine the student’s score in the DASS-21 questionnaire portion of the survey alongside certain population variables such as their gender and year of study. We filtered the DASS-21 scores that correspond to anxiety, multiplied the scores by 2. Then we filtered the scores based on scores greater than or equal to 10 to represent those with “moderate to severe” levels of anxiety, while the other category represent those who experience “None to Mild” levels of anxiety. We decided on this structure because the moderate range of anxiety is a starting point to suggest seeking professional help as these levels of anxiety may start to greatly alter one’s regular daily activities. But we decided to filter out the "other" and "non-binary/genderqueer" to avoid making any extrapolations with other gender identities. Thus, our final sample population is $n=1169$  
+
+Existing literature suggests that female university students disproportionately experience more anxiety compared to their male counterparts (Prowse et al. 2021). We also expect a larger proportion of university students of lower years to experience poor mental health outcomes as they enter a new field of education, with students typically arriving from high school (Kessler et al., 2007). Existing literature also suggests that this demographic is still in the phase of emotional and mental development (Pedrelli et al., 2015). Thus, this demographic can also be susceptible to emotional turmoil - potentially more so than upper years who may have more experience with autonomy and dealing with a post-secondary workload.
+
+We decided to filter the dataset to examine the impact of anxiety on the proportions of males and females and further filter our scope to the year of study between female students. Thus, our guiding questions for this project 
+
+1) **Is there a statistically significant difference in proportion between males and females who experience moderate or greater levels of anxiety?**
+2) **Is the Year Credit of female students independent to experiencing moderate or greater levels of anxiety?**
+
+Before conducting our hypothesis testing, we checked for assumptions and tested conditions for using a proportional test and chi-squared test and ensured that these tests were appropriate to generate inferences. We used a proportions test or a prop.test() in R to compute if there is a difference in proportions between males and females that experience moderate to severe levels of anxiety an reported the difference in a confidence interval. we used a chisq.test() to test the association between a female’s year of study and their experience of moderate to severe levels of anxiety. 
+
+Based on our findings, we found evidence to suggest that a larger proportion of females experience moderate to severe levels of anxiety compared to males. Notably, these findings are in line with existing literature (Prowse et al. 2021) which suggests that females experience worse mental health problems. While our results provide support to existing literature, further research into mental health support should look at the potential factors surrounding gender differences. These factors can look into gender-based differences in expectations about university and examining perceptions of current supports with the context of the COVID-19 pandemic.  
+
+Our findings suggest that there is no significant association of being a first year and fourth year female students with anxiety levels. To our knowledge, this is the first study conducted specifically analyzing female undergraduate first year and fourth years and their anxiety levels to also include the impacts of year of study with the age of students. Since we did not reject the null hypothesis, further research should look into the unique stressors per year as we cannot assume that each year is equally predisposed to anxiety. Thus, mental-health treatments, interventions, and campaigns should consider focusing on stressors that are unique to the their year. However, Post-secondary institutions should still provide consistent mental health support throughout a student's academic journey, especially during the COVID-19 pandemic. 
+
+
+Limitations should be noted in our study:
+
+1) We did not account for other potential confounding variables, such as socio-economic status, participation in extracurricular activities, or personal relationships - all of which could influence anxiety levels at the time of completing the survey. 
+
+2) The self-reported nature of the data could introduce biases, as participants might over-report or under-report actual anxiety levels.
+
+
+
+With the rise of digital platforms and new methodologies in education, post-secondary institutions are faced with the dual task of ensuring academic rigor while also fostering a supportive environment for students. Our study is a testament to the need to account for the unique factors of gender and year of study in mental health strategies, integrating feedback from students and being adaptive to their evolving needs. The challenges that students face today are multi-faceted, and the solutions, as our study suggests, need to be just as comprehensive. 
+
+\newpage
+
+\begin{center}
+\textbf{References}
+\end{center}
+
+\setlength{\leftskip}{2em}
+\setlength{\parindent}{-2em}
+
+Ahmed, S. P., Bittencourt-Hewitt, A., & Sebastian, C. L. (2015). Neurocognitive bases of emotion regulation development in adolescence. Developmental Cognitive Neuroscience, 15, 11–25. https://doi.org/10.1016/j.dcn.2015.07.006
+
+Eisenberg, D., Golberstein, E., & Hunt, J. B. (2009). Mental Health and Academic Success in College. The B.E. Journal of Economic Analysis & Policy, 9(1). https://doi.org/10.2202/1935-1682.2191
+
+Government of Canada, S. C. (2022, October 18). The impact of the COVID-19 pandemic on the proportion of youth not in employment, education or training: A regional analysis and international perspective. https://www150.statcan.gc.ca/n1/pub/81-599-x/81-599-x2022001-eng.html
+
+Kessler, R. C., Angermeyer, M., Anthony, J. C., De Graaf, R., Demyttenaere, K., Gasquet, I., et al. (2007). Lifetime prevalence and age-of-onset distributions of mental disorders in the World Health Organization’s World Mental Health Survey Initiative. World Psychiatry, 6(3), 168–176.
+
+Lipson, S. K., Zhou, S., Abelson, S., Heinze, J., Jirsa, M., Morigney, J., Patterson, A., Singh, M., & Eisenberg, D. (2022). Trends in college student mental health and help-seeking by race/ethnicity: Findings from the national healthy minds study, 2013–2021. Journal of Affective Disorders, 306, 138–147. https://doi.org/10.1016/j.jad.2022.03.038
+
+Lovibond, P. F., & Lovibond, S. H. (1995). The structure of negative emotional states: Comparison of the Depression Anxiety Stress Scales (DASS) with the Beck Depression and Anxiety Inventories. Behaviour Research and Therapy, 33(3), 335–343. https://doi.org/10.1016/0005-7967(94)00075-u
+
+Paterson, T., & Reeves, J. (2022). University Student Mental Health [Student_Mental_Health_2021-10-10] (Version 2) [dataset]. Borealis. https://doi.org/10.5683/SP3/VEIBVL
+
+Pedrelli, P., Nyer, M., Yeung, A., Zulauf, C., & Wilens, T. (2015). College Students: Mental Health Problems and Treatment Considerations. Academic Psychiatry : The Journal of the American Association of Directors of Psychiatric Residency Training and the Association for Academic Psychiatry, 39(5), 503–511. https://doi.org/10.1007/s40596-014-0205-9
+
+Prowse, R., Sherratt, F., Abizaid, A., Gabrys, R. L., Hellemans, K. G. C., Patterson, Z. R., & McQuaid, R. J. (2021). Coping With the COVID-19 Pandemic: Examining Gender Differences in Stress and Mental Health Among University Students. Frontiers in Psychiatry, 12. https://www.frontiersin.org/articles/10.3389/fpsyt.2021.650759
+
+\setlength{\leftskip}{0pt}  
+\setlength{\parindent}{0pt}
+
+
+

@@ -35,6 +35,8 @@ The project employs statistical analysis techniques, including chi-square tests 
 ## Contributing
 We welcome contributions. Please fork this repository and submit a pull request with your suggestions.
 
+![Gender](hyp_test_anxiety.png "Proportions by gender")
+
 ## License
 This project is licensed under the MIT License.
 
